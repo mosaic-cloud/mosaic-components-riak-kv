@@ -1,0 +1,6 @@
+
+(vbs:require-erlang)
+
+(vbs:define-erlang-application 'cluster_info
+	erl: "\\./repositories/cluster_info/src/.*\\.erl"
+	additional-ebin: "\\./\\.generated/.*\\.app")

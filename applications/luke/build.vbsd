@@ -1,0 +1,6 @@
+
+(vbs:require-erlang)
+
+(vbs:define-erlang-application 'luke
+	erl: "\\./repositories/luke/src/.*\\.erl"
+	additional-ebin: "\\./repositories/luke/ebin/.*\\.app")

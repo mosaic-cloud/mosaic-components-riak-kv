@@ -1,0 +1,7 @@
+
+(vbs:require-erlang)
+
+(vbs:define-erlang-application 'basho_stats
+	erl: "\\./repositories/basho-stats/src/.*\\.erl"
+	hrl: "\\./repositories/basho-stats/include/.*\\.hrl"
+	additional-ebin: "\\./repositories/basho-stats/ebin/.*\\.app")

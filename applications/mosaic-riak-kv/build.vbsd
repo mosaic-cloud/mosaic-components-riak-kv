@@ -1,0 +1,8 @@
+
+(vbs:require-erlang)
+
+(vbs:define-erlang-application 'mosaic_riak_kv
+	dependencies: '(mosaic_component mosaic_harness mosaic_tools)
+	erl: "\\./sources/.*\\.erl"
+	additional-ebin: "\\./sources/.*\\.app"
+	additional-priv: "\\./sources/.*\\.config")

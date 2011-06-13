@@ -1,0 +1,11 @@
+
+(vbs:require-erlang)
+
+(vbs:define-erlang-application 'riak_kv
+	dependencies: '(
+			riak_core riakc
+			mochiweb webmachine
+			bitcask ebloom erlang_js luke eper)
+	erl: "\\./repositories/riak-kv/src/.*\\.erl"
+	hrl: "\\./repositories/riak-kv/(include|src)/.*\\.hrl"
+	additional-ebin: "\\./repositories/riak-kv/ebin/.*\\.app")

@@ -1,0 +1,7 @@
+
+(vbs:require-erlang)
+
+(vbs:define-erlang-application 'eper
+	erl: "\\./repositories/eper/src/.*\\.erl"
+	hrl: "\\./repositories/eper/src/.*\\.hrl"
+	additional-ebin: "\\./\\.generated/.*\\.app")

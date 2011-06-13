@@ -1,0 +1,7 @@
+
+(vbs:require-erlang)
+
+(vbs:define-erlang-application 'skerl
+	erl: "\\./repositories/skerl/src/.*\\.erl"
+	additional-ebin: "\\./repositories/skerl/ebin/.*\\.app"
+	additional-priv: "\\./\\.generated/.*\\.so")

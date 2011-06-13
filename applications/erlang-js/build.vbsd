@@ -1,0 +1,7 @@
+
+(vbs:require-erlang)
+
+(vbs:define-erlang-application 'erlang_js
+	erl: "\\./repositories/erlang-js/src/.*\\.erl"
+	additional-ebin: "\\./repositories/erlang-js/ebin/.*\\.app"
+	additional-priv: "\\./repositories/erlang-js/priv/.*\\.json|\\./\\.generated/.*\\.so")

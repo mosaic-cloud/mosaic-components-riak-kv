@@ -1,0 +1,6 @@
+
+(vbs:require-erlang)
+
+(vbs:define-erlang-application 'protobuffs
+	erl: "(\\./repositories/erlang-protobuffs/src|\\./\\.generated)/.*\\.erl"
+	additional-ebin: "\\./\\.generated/.*\\.app")

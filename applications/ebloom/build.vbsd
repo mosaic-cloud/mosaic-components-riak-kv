@@ -1,0 +1,7 @@
+
+(vbs:require-erlang)
+
+(vbs:define-erlang-application 'ebloom
+	erl: "\\./repositories/ebloom/src/.*\\.erl"
+	additional-ebin: "\\./repositories/ebloom/ebin/.*\\.app"
+	additional-priv: "\\./\\.generated/.*\\.so")
