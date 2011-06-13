@@ -8,4 +8,5 @@
 			bitcask ebloom erlang_js luke eper)
 	erl: "\\./repositories/riak-kv/src/.*\\.erl"
 	hrl: "\\./repositories/riak-kv/(include|src)/.*\\.hrl"
-	additional-ebin: "\\./repositories/riak-kv/ebin/.*\\.app")
+	additional-ebin: "\\./repositories/riak-kv/ebin/.*\\.app"
+	additional-priv: "\\./repositories/riak-kv/priv/.*\\.js")
