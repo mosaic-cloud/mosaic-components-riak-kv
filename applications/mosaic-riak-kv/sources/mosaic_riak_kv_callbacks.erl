@@ -104,14 +104,15 @@ handle_info ({{mosaic_riak_kv_callbacks_internals, acquire_return}, Outcome}, Ol
 		StoreHttpSocketIpString = erlang:binary_to_list (StoreHttpSocketIp),
 		StorePbSocketIpString = erlang:binary_to_list (StorePbSocketIp),
 		HandoffSocketIpString = erlang:binary_to_list (HandoffSocketIp),
-		ok = enforce_ok (application:set_env (riak_core, handoff_ip, HandoffSocketIpString)),
-		ok = enforce_ok (application:set_env (riak_core, handoff_port, HandoffSocketPort)),
-		ok = enforce_ok (application:set_env (riak_core, http, [{StoreHttpSocketIpString, StoreHttpSocketPort}])),
-		ok = enforce_ok (application:set_env (riak_kv, pb_ip, StorePbSocketIpString)),
-		ok = enforce_ok (application:set_env (riak_kv, pb_port, StorePbSocketPort)),
-		ok = enforce_ok (application:set_env (riak_core, ring_state_dir, "/tmp/mosaic/components/mosaic-riak-kv/" ++ IdentifierString ++ "/ring")),
-		ok = enforce_ok (application:set_env (riak_kv, mapred_queue_dir, "/tmp/mosaic/components/mosaic-riak-kv/" ++ IdentifierString ++ "/mapred")),
-		ok = enforce_ok (application:set_env (bitcask, data_root, "/tmp/mosaic/components/mosaic-riak-kv/" ++ IdentifierString ++ "/bitcask")),
+		ok = enforce_ok (mosaic_component_callbacks:configure ([
+					{env, riak_core, handoff_ip, HandoffSocketIpString},
+					{env, riak_core, handoff_port, HandoffSocketPort},
+					{env, riak_core, http, [{StoreHttpSocketIpString, StoreHttpSocketPort}]},
+					{env, riak_kv, pb_ip, StorePbSocketIpString},
+					{env, riak_kv, pb_port, StorePbSocketPort},
+					{env, riak_core, ring_state_dir, "/tmp/mosaic/components/mosaic-riak-kv/" ++ IdentifierString ++ "/ring"},
+					{env, riak_kv, mapred_queue_dir, "/tmp/mosaic/components/mosaic-riak-kv/" ++ IdentifierString ++ "/mapred"},
+					{env, bitcask, data_root, "/tmp/mosaic/components/mosaic-riak-kv/" ++ IdentifierString ++ "/bitcask"}])),
 		ok = enforce_ok (start_applications ()),
 		ok = enforce_ok (mosaic_component_callbacks:register_async (Group, {mosaic_riak_kv_callbacks_internals, register_return})),
 		NewState = OldState#state{status = waiting_register_return, store_http_socket = StoreHttpSocket, store_pb_socket = StorePbSocket, handoff_socket = HandoffSocket},
@@ -170,58 +171,23 @@ handle_info (Message, State = #state{status = Status}) ->
 
 
 configure () ->
-	try
-		ok = enforce_ok (load_applications ()),
-		AppEnvIdentifier = enforce_ok_1 (mosaic_generic_coders:application_env_get (identifier, mosaic_riak_kv,
-					{decode, fun mosaic_component_coders:decode_component/1}, {default, undefined})),
-		OsEnvIdentifier = enforce_ok_1 (mosaic_generic_coders:os_env_get (mosaic_component_identifier,
-					{decode, fun mosaic_component_coders:decode_component/1}, {default, undefined})),
-		AppEnvGroup = enforce_ok_1 (mosaic_generic_coders:application_env_get (group, mosaic_riak_kv,
-					{decode, fun mosaic_component_coders:decode_group/1}, {default, undefined})),
-		OsEnvGroup = enforce_ok_1 (mosaic_generic_coders:os_env_get (mosaic_component_group,
-					{decode, fun mosaic_component_coders:decode_group/1}, {default, undefined})),
-		HarnessInputDescriptor = enforce_ok_1 (mosaic_generic_coders:os_env_get (mosaic_component_harness_input_descriptor,
-					{decode, fun mosaic_generic_coders:decode_integer/1}, {error, missing_harness_input_descriptor})),
-		HarnessOutputDescriptor = enforce_ok_1 (mosaic_generic_coders:os_env_get (mosaic_component_harness_output_descriptor,
-					{decode, fun mosaic_generic_coders:decode_integer/1}, {error, missing_harness_output_descriptor})),
-		Identifier = if
-			(OsEnvIdentifier =/= undefined) -> OsEnvIdentifier;
-			(AppEnvIdentifier =/= undefined) -> AppEnvIdentifier;
-			true -> throw ({error, missing_identifier})
-		end,
-		Group = if
-			(OsEnvGroup =/= undefined) -> OsEnvGroup;
-			(AppEnvGroup =/= undefined) -> AppEnvGroup;
-			true -> throw ({error, missing_group})
-		end,
-		IdentifierString = erlang:binary_to_list (enforce_ok_1 (mosaic_component_coders:encode_component (Identifier))),
-		GroupString = erlang:binary_to_list (enforce_ok_1 (mosaic_component_coders:encode_group (Group))),
-		ok = enforce_ok (application:set_env (mosaic_riak_kv, identifier, IdentifierString)),
-		ok = enforce_ok (application:set_env (mosaic_riak_kv, group, GroupString)),
-		ok = enforce_ok (application:set_env (mosaic_component, harness_input_descriptor, HarnessInputDescriptor)),
-		ok = enforce_ok (application:set_env (mosaic_component, harness_output_descriptor, HarnessOutputDescriptor)),
-		ok
-	catch throw : {error, Reason} -> {error, {failed_configuring, Reason}} end.
+	mosaic_component_callbacks:configure ([
+				{load, mosaic_riak_kv, with_dependencies},
+				{load, fun resolve_applications/0, without_dependencies},
+				{identifier, mosaic_riak_kv},
+				{group, mosaic_riak_kv},
+				harness]).
 
 
 resolve_applications () ->
 	{ok, [
 				sasl, os_mon, inets, crypto,
-				% riak_err, cluster_info,
+				riak_err, cluster_info,
 				mochiweb, webmachine, basho_stats,
 				riak_core,
 				bitcask, luke, erlang_js,
 				riak_kv,
 				skerl, luwak]}.
-
-
-load_applications () ->
-	try
-		ok = enforce_ok (mosaic_application_tools:load (mosaic_riak_kv, with_dependencies)),
-		Applications = enforce_ok_1 (resolve_applications ()),
-		ok = enforce_ok (mosaic_application_tools:load (Applications, without_dependencies)),
-		ok
-	catch throw : Error = {error, _Reason} -> Error end.
 
 
 start_applications () ->
