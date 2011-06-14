@@ -172,7 +172,7 @@ handle_info (Message, State = #state{status = Status}) ->
 
 configure () ->
 	mosaic_component_callbacks:configure ([
-				{load, mosaic_riak_kv, with_dependencies},
+				{load, mosaic_riak_kv, without_dependencies},
 				{load, fun resolve_applications/0, without_dependencies},
 				{identifier, mosaic_riak_kv},
 				{group, mosaic_riak_kv},
@@ -194,38 +194,28 @@ start_applications () ->
 	try
 		Applications = enforce_ok_1 (resolve_applications ()),
 		ok = enforce_ok (mosaic_application_tools:start (Applications, without_dependencies)),
-		ok = enforce_ok (mosaic_application_tools:start (mosaic_riak_kv, with_dependencies)),
+		ok = enforce_ok (mosaic_application_tools:start (mosaic_riak_kv, without_dependencies)),
 		ok
 	catch throw : Error = {error, _Reason} -> Error end.
 
 
 stop_applications () ->
-	try
-		enforce_ok (stop_applications (leave))
-	catch
-		throw : {error, Reason} ->
-			ok = mosaic_tools:trace_error ("failed stopping applications...", [{reason, Reason}]),
-			ok;
-		_ : Reason ->
-			ok = mosaic_tools:trace_error ("failed stopping applications...", [{reason, Reason}]),
-			ok
-	end.
+	stop_applications (leave).
 
 stop_applications (leave) ->
-	ok = enforce_ok (riak_core_gossip:remove_from_cluster (erlang:node ())),
-	stop_applications ({wait, 60});
+	_ = riak_core_gossip:remove_from_cluster (erlang:node ()),
+	stop_applications (wait);
 	
-stop_applications ({wait, 0}) ->
-	ok;
-	
-stop_applications ({wait, Counter}) ->
-	case riak_status:ringready () of
+stop_applications (wait) ->
+	case riak_kv_status:ringready () of
 		{ok, _Nodes} ->
+			ok = init:stop (),
 			ok;
 		{error, _Reason} ->
-			ok = enforce_ok (timer:sleep (1000)),
-			stop_applications ({wait, Counter - 1})
+			ok = timer:sleep (1000),
+			stop_applications (wait)
 	end.
+
 
 stop_applications_async () ->
 	_ = erlang:spawn (
