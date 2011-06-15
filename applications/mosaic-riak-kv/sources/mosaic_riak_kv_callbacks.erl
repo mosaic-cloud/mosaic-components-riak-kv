@@ -161,8 +161,8 @@ standalone () ->
 standalone_1 () ->
 	try
 		Identifier = <<0 : 160>>,
-		StoreHttpSocket = {<<"0.0.0.0">>, 24637},
-		StorePbSocket = {<<"0.0.0.0">>, 22652},
+		StoreHttpSocket = {<<"127.0.0.1">>, 24637},
+		StorePbSocket = {<<"127.0.0.1">>, 22652},
 		HandoffSocket = {<<"127.0.0.1">>, 23283},
 		ok = enforce_ok (load_applications ()),
 		ok = enforce_ok (setup_applications (Identifier, StoreHttpSocket, StorePbSocket, HandoffSocket)),
