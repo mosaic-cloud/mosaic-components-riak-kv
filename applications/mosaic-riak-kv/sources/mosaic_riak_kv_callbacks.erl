@@ -4,7 +4,7 @@
 -behaviour (mosaic_component_callbacks).
 
 
--export ([configure/0]).
+-export ([configure/0, standalone/0]).
 -export ([init/0, terminate/2, handle_call/5, handle_cast/4, handle_info/2]).
 
 
@@ -97,22 +97,7 @@ handle_info ({{mosaic_riak_kv_callbacks_internals, acquire_return}, Outcome}, Ol
 		Descriptors = enforce_ok_1 (Outcome),
 		[StoreHttpSocket, StorePbSocket, HandoffSocket] = enforce_ok_1 (mosaic_component_coders:decode_socket_ipv4_tcp_descriptors (
 					[<<"store_http_socket">>, <<"store_pb_socket">>, <<"handoff_socket">>], Descriptors)),
-		{StoreHttpSocketIp, StoreHttpSocketPort} = StoreHttpSocket,
-		{StorePbSocketIp, StorePbSocketPort} = StorePbSocket,
-		{HandoffSocketIp, HandoffSocketPort} = HandoffSocket,
-		IdentifierString = erlang:binary_to_list (enforce_ok_1 (mosaic_component_coders:encode_component (Identifier))),
-		StoreHttpSocketIpString = erlang:binary_to_list (StoreHttpSocketIp),
-		StorePbSocketIpString = erlang:binary_to_list (StorePbSocketIp),
-		HandoffSocketIpString = erlang:binary_to_list (HandoffSocketIp),
-		ok = enforce_ok (mosaic_component_callbacks:configure ([
-					{env, riak_core, handoff_ip, HandoffSocketIpString},
-					{env, riak_core, handoff_port, HandoffSocketPort},
-					{env, riak_core, http, [{StoreHttpSocketIpString, StoreHttpSocketPort}]},
-					{env, riak_kv, pb_ip, StorePbSocketIpString},
-					{env, riak_kv, pb_port, StorePbSocketPort},
-					{env, riak_core, ring_state_dir, "/tmp/mosaic/components/mosaic-riak-kv/" ++ IdentifierString ++ "/ring"},
-					{env, riak_kv, mapred_queue_dir, "/tmp/mosaic/components/mosaic-riak-kv/" ++ IdentifierString ++ "/mapred"},
-					{env, bitcask, data_root, "/tmp/mosaic/components/mosaic-riak-kv/" ++ IdentifierString ++ "/bitcask"}])),
+		ok = enforce_ok (setup_applications (Identifier, StoreHttpSocket, StorePbSocket, HandoffSocket)),
 		ok = enforce_ok (start_applications ()),
 		ok = enforce_ok (mosaic_component_callbacks:register_async (Group, {mosaic_riak_kv_callbacks_internals, register_return})),
 		NewState = OldState#state{status = waiting_register_return, store_http_socket = StoreHttpSocket, store_pb_socket = StorePbSocket, handoff_socket = HandoffSocket},
@@ -170,13 +155,31 @@ handle_info (Message, State = #state{status = Status}) ->
 	{stop, {error, {invalid_message, Message}}, State}.
 
 
+standalone () ->
+	mosaic_application_tools:boot (fun standalone_1/0).
+
+standalone_1 () ->
+	try
+		Identifier = <<0 : 160>>,
+		StoreHttpSocket = {<<"0.0.0.0">>, 24637},
+		StorePbSocket = {<<"0.0.0.0">>, 22652},
+		HandoffSocket = {<<"127.0.0.1">>, 23283},
+		ok = enforce_ok (load_applications ()),
+		ok = enforce_ok (setup_applications (Identifier, StoreHttpSocket, StorePbSocket, HandoffSocket)),
+		ok = enforce_ok (start_applications ()),
+		ok
+	catch throw : Error = {error, _Reason} -> Error end.
+
+
 configure () ->
-	mosaic_component_callbacks:configure ([
-				{load, mosaic_riak_kv, without_dependencies},
-				{load, fun resolve_applications/0, without_dependencies},
-				{identifier, mosaic_riak_kv},
-				{group, mosaic_riak_kv},
-				harness]).
+	try
+		ok = enforce_ok (load_applications ()),
+		ok = enforce_ok (mosaic_component_callbacks:configure ([
+					{identifier, mosaic_riak_kv},
+					{group, mosaic_riak_kv},
+					harness])),
+		ok
+	catch throw : Error = {error, _Reason} -> Error end.
 
 
 resolve_applications () ->
@@ -190,11 +193,41 @@ resolve_applications () ->
 				skerl, luwak]}.
 
 
+load_applications () ->
+	try
+		ok = enforce_ok (mosaic_application_tools:load (mosaic_riak_kv, without_dependencies)),
+		Applications = enforce_ok_1 (resolve_applications ()),
+		ok = enforce_ok (mosaic_application_tools:load (Applications, without_dependencies)),
+		ok
+	catch throw : Error = {error, _Reason} -> Error end.
+
+
+setup_applications (Identifier, StoreHttpSocket, StorePbSocket, HandoffSocket) ->
+	try
+		{StoreHttpSocketIp, StoreHttpSocketPort} = StoreHttpSocket,
+		{StorePbSocketIp, StorePbSocketPort} = StorePbSocket,
+		{HandoffSocketIp, HandoffSocketPort} = HandoffSocket,
+		IdentifierString = erlang:binary_to_list (enforce_ok_1 (mosaic_component_coders:encode_component (Identifier))),
+		StoreHttpSocketIpString = erlang:binary_to_list (StoreHttpSocketIp),
+		StorePbSocketIpString = erlang:binary_to_list (StorePbSocketIp),
+		HandoffSocketIpString = erlang:binary_to_list (HandoffSocketIp),
+		ok = enforce_ok (mosaic_component_callbacks:configure ([
+					{env, riak_core, handoff_ip, HandoffSocketIpString},
+					{env, riak_core, handoff_port, HandoffSocketPort},
+					{env, riak_core, http, [{StoreHttpSocketIpString, StoreHttpSocketPort}]},
+					{env, riak_kv, pb_ip, StorePbSocketIpString},
+					{env, riak_kv, pb_port, StorePbSocketPort},
+					{env, riak_core, ring_state_dir, "/tmp/mosaic/components/mosaic-riak-kv/" ++ IdentifierString ++ "/ring"},
+					{env, riak_kv, mapred_queue_dir, "/tmp/mosaic/components/mosaic-riak-kv/" ++ IdentifierString ++ "/mapred"},
+					{env, bitcask, data_root, "/tmp/mosaic/components/mosaic-riak-kv/" ++ IdentifierString ++ "/bitcask"}])),
+		ok
+	catch throw : Error = {error, _Reason} -> Error end.
+
+
 start_applications () ->
 	try
 		Applications = enforce_ok_1 (resolve_applications ()),
 		ok = enforce_ok (mosaic_application_tools:start (Applications, without_dependencies)),
-		ok = enforce_ok (mosaic_application_tools:start (mosaic_riak_kv, without_dependencies)),
 		ok
 	catch throw : Error = {error, _Reason} -> Error end.
 
