@@ -185,8 +185,8 @@ configure () ->
 resolve_applications () ->
 	{ok, [
 				sasl, os_mon, inets, crypto,
-				riak_err, cluster_info,
-				mochiweb, webmachine, basho_stats,
+				% riak_err,
+				cluster_info, mochiweb, webmachine, basho_stats,
 				riak_core,
 				bitcask, luke, erlang_js,
 				riak_kv,
@@ -202,8 +202,9 @@ load_applications () ->
 	catch throw : Error = {error, _Reason} -> Error end.
 
 
-setup_applications (_Identifier, StoreHttpSocket, StorePbSocket, HandoffSocket) ->
+setup_applications (Identifier, StoreHttpSocket, StorePbSocket, HandoffSocket) ->
 	try
+		IdentifierString = enforce_ok_1 (mosaic_component_coders:encode_component (Identifier)),
 		{StoreHttpSocketIp, StoreHttpSocketPort} = StoreHttpSocket,
 		{StorePbSocketIp, StorePbSocketPort} = StorePbSocket,
 		{HandoffSocketIp, HandoffSocketPort} = HandoffSocket,
@@ -216,6 +217,10 @@ setup_applications (_Identifier, StoreHttpSocket, StorePbSocket, HandoffSocket) 
 					{env, riak_core, http, [{StoreHttpSocketIpString, StoreHttpSocketPort}]},
 					{env, riak_kv, pb_ip, StorePbSocketIpString},
 					{env, riak_kv, pb_port, StorePbSocketPort}])),
+		ok = error_logger:info_report (["Configuring mOSAIC Riak KV component...",
+					{identifier, IdentifierString},
+					{url, erlang:list_to_binary ("http://" ++ StoreHttpSocketIpString ++ ":" ++ erlang:integer_to_list (StoreHttpSocketPort) ++ "/")},
+					{store_http_endpoint, StoreHttpSocket}, {store_pb_endpoint, StorePbSocket}, {handoff_endpoint, HandoffSocket}]),
 		ok
 	catch throw : Error = {error, _Reason} -> Error end.
 
