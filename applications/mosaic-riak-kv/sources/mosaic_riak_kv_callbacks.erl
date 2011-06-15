@@ -202,12 +202,11 @@ load_applications () ->
 	catch throw : Error = {error, _Reason} -> Error end.
 
 
-setup_applications (Identifier, StoreHttpSocket, StorePbSocket, HandoffSocket) ->
+setup_applications (_Identifier, StoreHttpSocket, StorePbSocket, HandoffSocket) ->
 	try
 		{StoreHttpSocketIp, StoreHttpSocketPort} = StoreHttpSocket,
 		{StorePbSocketIp, StorePbSocketPort} = StorePbSocket,
 		{HandoffSocketIp, HandoffSocketPort} = HandoffSocket,
-		IdentifierString = erlang:binary_to_list (enforce_ok_1 (mosaic_component_coders:encode_component (Identifier))),
 		StoreHttpSocketIpString = erlang:binary_to_list (StoreHttpSocketIp),
 		StorePbSocketIpString = erlang:binary_to_list (StorePbSocketIp),
 		HandoffSocketIpString = erlang:binary_to_list (HandoffSocketIp),
@@ -216,10 +215,7 @@ setup_applications (Identifier, StoreHttpSocket, StorePbSocket, HandoffSocket) -
 					{env, riak_core, handoff_port, HandoffSocketPort},
 					{env, riak_core, http, [{StoreHttpSocketIpString, StoreHttpSocketPort}]},
 					{env, riak_kv, pb_ip, StorePbSocketIpString},
-					{env, riak_kv, pb_port, StorePbSocketPort},
-					{env, riak_core, ring_state_dir, "/tmp/mosaic/components/mosaic-riak-kv/" ++ IdentifierString ++ "/ring"},
-					{env, riak_kv, mapred_queue_dir, "/tmp/mosaic/components/mosaic-riak-kv/" ++ IdentifierString ++ "/mapred"},
-					{env, bitcask, data_root, "/tmp/mosaic/components/mosaic-riak-kv/" ++ IdentifierString ++ "/bitcask"}])),
+					{env, riak_kv, pb_port, StorePbSocketPort}])),
 		ok
 	catch throw : Error = {error, _Reason} -> Error end.
 
