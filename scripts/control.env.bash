@@ -8,7 +8,7 @@ _erl_run_argv=(
 	-env ERL_LIBS "${_deployment_erlang_path:-./erlang}/lib"
 	-env LANG C
 	-noshell -noinput
-	-sname -sname mosaic-riak-kv-0000000000000000000000000000000000000000@localhost
+	-sname mosaic-riak-kv-0000000000000000000000000000000000000000@localhost
 	-boot start_sasl
 	-config "${_deployment_erlang_path:-./erlang}/lib/mosaic_riak_kv/priv/mosaic_riak_kv.config"
 	-run mosaic_riak_kv_callbacks standalone
