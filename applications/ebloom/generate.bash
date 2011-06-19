@@ -11,6 +11,7 @@ mkdir ./.generated
 gcc -shared -o ./.generated/ebloom_nifs.so \
 		-I ./repositories/ebloom/c_src \
 		-I /usr/lib/erlang/usr/include \
-		./repositories/ebloom/c_src/ebloom_nifs.cpp
+		./repositories/ebloom/c_src/ebloom_nifs.cpp \
+		-lstdc++
 
 exit 0
