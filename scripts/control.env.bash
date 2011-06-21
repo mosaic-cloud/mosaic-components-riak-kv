@@ -1,16 +1,13 @@
 #!/dev/null
 
-_erl_path=''
+_identifier="${mosaic_component_identifier:-00000000d40764b8f0234b09fb799980063e83e6}"
 
-_erl_run_argv=(
-	+Bd +Ww
-	-env ERL_CRASH_DUMP /dev/null
-	-env ERL_LIBS "${_deployment_erlang_path:-./erlang}/lib"
-	-env LANG C
+_erl_args+=(
 	-noshell -noinput
-	-sname mosaic-riak-kv-0000000000000000000000000000000000000000@localhost
+	-sname "mosaic-riak-kv-${_identifier}@localhost"
+	-env mosaic_component_identifier "${_identifier}"
 	-boot start_sasl
-	-config "${_deployment_erlang_path:-./erlang}/lib/mosaic_riak_kv/priv/mosaic_riak_kv.config"
+	-config "${_deployment_erlang_path}/lib/mosaic_riak_kv/priv/mosaic_riak_kv.config"
 	-run mosaic_riak_kv_callbacks standalone
 )
 
