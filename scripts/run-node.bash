@@ -6,15 +6,18 @@ if ! test "${#}" -le 1 ; then
 fi
 
 _identifier="${1:-00000000d40764b8f0234b09fb799980063e83e6}"
+_fqdn="${mosaic_node_fqdn:-}"
 
 _erl_args+=(
 		-noinput -noshell
-		-sname "mosaic-riak-kv-${_identifier}@${_erl_host}" -setcookie "${_erl_cookie}"
+		-name "mosaic-riak-kv-${_identifier}@${_fqdn:-mosaic-0.loopback.vnet}"
+		-setcookie "${_erl_cookie}"
 		-boot start_sasl
-		-config "${_outputs}/erlang/applications/mosaic_riak_kv/priv/mosaic_riak_kv.config"
+		-config "${_erl_libs}/mosaic_riak_kv/priv/mosaic_riak_kv.config"
 )
 _erl_env+=(
 		mosaic_component_identifier="${_identifier}"
+		mosaic_node_fqdn="${_fqdn}"
 )
 
 if test "${_identifier}" != 00000000d40764b8f0234b09fb799980063e83e6 ; then

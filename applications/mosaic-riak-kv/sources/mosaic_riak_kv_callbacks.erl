@@ -98,6 +98,16 @@ handle_info ({{mosaic_riak_kv_callbacks_internals, acquire_return}, Outcome}, Ol
 		[StoreHttpSocket, StorePbSocket, HandoffSocket] = enforce_ok_1 (mosaic_component_coders:decode_socket_ipv4_tcp_descriptors (
 					[<<"store_http_socket">>, <<"store_pb_socket">>, <<"handoff_socket">>], Descriptors)),
 		ok = enforce_ok (setup_applications (Identifier, StoreHttpSocket, StorePbSocket, HandoffSocket)),
+		_ = erlang:spawn_link (
+				fun () ->
+					true = erlang:register (riak_core_stop_intercepter, erlang:self ()),
+					ok = receive
+						{riak_core, stop, _Reason} ->
+							mosaic_component_callbacks:terminate (),
+							ok
+					end,
+					ok
+				end),
 		ok = enforce_ok (start_applications ()),
 		ok = enforce_ok (mosaic_component_callbacks:register_async (Group, {mosaic_riak_kv_callbacks_internals, register_return})),
 		NewState = OldState#state{status = waiting_register_return, store_http_socket = StoreHttpSocket, store_pb_socket = StorePbSocket, handoff_socket = HandoffSocket},
@@ -239,8 +249,17 @@ stop_applications () ->
 	stop_applications (leave).
 
 stop_applications (leave) ->
-	_ = riak_core_gossip:remove_from_cluster (erlang:node ()),
-	stop_applications (wait);
+	case riak_kv_status:ringready () of
+		{ok, [Node]} when (Node =:= node ()) ->
+			ok = init:stop (),
+			ok;
+		{ok, _Nodes} ->
+			_ = riak_core_gossip:remove_from_cluster (erlang:node ()),
+			stop_applications (wait);
+		{error, _Reason} ->
+			ok = timer:sleep (1000),
+			stop_applications (leave)
+	end;
 	
 stop_applications (wait) ->
 	case riak_kv_status:ringready () of
