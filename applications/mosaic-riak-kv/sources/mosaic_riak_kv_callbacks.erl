@@ -32,26 +32,25 @@ terminate (_Reason, _State = #state{}) ->
 
 
 handle_call (<<"mosaic-riak-kv:get-store-http-endpoint">>, null, <<>>, _Sender, State = #state{status = executing, store_http_socket = Socket}) ->
-	{SocketIp, SocketPort} = Socket,
+	{SocketIp, SocketPort, SocketFqdn} = Socket,
 	Outcome = {ok, {struct, [
-					{<<"ip">>, SocketIp}, {<<"port">>, SocketPort},
-					{<<"url">>, erlang:iolist_to_binary (["http://", SocketIp, ":", erlang:integer_to_list (SocketPort), "/"])}
+					{<<"ip">>, SocketIp}, {<<"port">>, SocketPort}, {<<"fqdn">>, SocketFqdn},
+					{<<"url">>, erlang:iolist_to_binary (["http://", SocketFqdn, ":", erlang:integer_to_list (SocketPort), "/"])}
 				]}, <<>>},
 	{reply, Outcome, State};
 	
 handle_call (<<"mosaic-riak-kv:get-store-pb-endpoint">>, null, <<>>, _Sender, State = #state{status = executing, store_pb_socket = Socket}) ->
-	{SocketIp, SocketPort} = Socket,
+	{SocketIp, SocketPort, SocketFqdn} = Socket,
 	Outcome = {ok, {struct, [
-					{<<"ip">>, SocketIp}, {<<"port">>, SocketPort},
-					{<<"url">>, erlang:iolist_to_binary (["riak://", SocketIp, ":", erlang:integer_to_list (SocketPort), "/"])}
+					{<<"ip">>, SocketIp}, {<<"port">>, SocketPort}, {<<"fqdn">>, SocketFqdn},
+					{<<"url">>, erlang:iolist_to_binary (["riak://", SocketFqdn, ":", erlang:integer_to_list (SocketPort), "/"])}
 				]}, <<>>},
 	{reply, Outcome, State};
 	
 handle_call (<<"mosaic-riak-kv:get-handoff-endpoint">>, null, <<>>, _Sender, State = #state{status = executing, handoff_socket = Socket}) ->
-	{SocketIp, SocketPort} = Socket,
+	{SocketIp, SocketPort, SocketFqdn} = Socket,
 	Outcome = {ok, {struct, [
-					{<<"ip">>, SocketIp}, {<<"port">>, SocketPort}
-				]}, <<>>},
+					{<<"ip">>, SocketIp}, {<<"port">>, SocketPort}, {<<"fqdn">>, SocketFqdn}]}, <<>>},
 	{reply, Outcome, State};
 	
 handle_call (<<"mosaic-riak-kv:get-node-identifier">>, null, <<>>, _Sender, State) ->
@@ -174,9 +173,9 @@ standalone_1 () ->
 		ok = enforce_ok (mosaic_component_callbacks:configure ([{identifier, mosaic_riak_kv}])),
 		Identifier = enforce_ok_1 (mosaic_generic_coders:application_env_get (identifier, mosaic_riak_kv,
 					{decode, fun mosaic_component_coders:decode_component/1}, {error, missing_identifier})),
-		StoreHttpSocket = {<<"127.0.0.1">>, 24637},
-		StorePbSocket = {<<"127.0.0.1">>, 22652},
-		HandoffSocket = {<<"127.0.0.1">>, 23283},
+		StoreHttpSocket = {<<"127.0.0.1">>, 24637, <<"127.0.0.1">>},
+		StorePbSocket = {<<"127.0.0.1">>, 22652, <<"127.0.0.1">>},
+		HandoffSocket = {<<"127.0.0.1">>, 23283, <<"127.0.0.1">>},
 		ok = enforce_ok (setup_applications (Identifier, StoreHttpSocket, StorePbSocket, HandoffSocket)),
 		ok = enforce_ok (start_applications ()),
 		ok
@@ -217,10 +216,11 @@ load_applications () ->
 setup_applications (Identifier, StoreHttpSocket, StorePbSocket, HandoffSocket) ->
 	try
 		IdentifierString = enforce_ok_1 (mosaic_component_coders:encode_component (Identifier)),
-		{StoreHttpSocketIp, StoreHttpSocketPort} = StoreHttpSocket,
-		{StorePbSocketIp, StorePbSocketPort} = StorePbSocket,
-		{HandoffSocketIp, HandoffSocketPort} = HandoffSocket,
+		{StoreHttpSocketIp, StoreHttpSocketPort, StoreHttpSocketFqdn} = StoreHttpSocket,
+		{StorePbSocketIp, StorePbSocketPort, _StorePbSocketFqdn} = StorePbSocket,
+		{HandoffSocketIp, HandoffSocketPort, _HandoffSocketFqdn} = HandoffSocket,
 		StoreHttpSocketIpString = erlang:binary_to_list (StoreHttpSocketIp),
+		StoreHttpSocketFqdnString = erlang:binary_to_list (StoreHttpSocketFqdn),
 		StorePbSocketIpString = erlang:binary_to_list (StorePbSocketIp),
 		HandoffSocketIpString = erlang:binary_to_list (HandoffSocketIp),
 		ok = enforce_ok (mosaic_component_callbacks:configure ([
@@ -231,7 +231,7 @@ setup_applications (Identifier, StoreHttpSocket, StorePbSocket, HandoffSocket) -
 					{env, riak_kv, pb_port, StorePbSocketPort}])),
 		ok = error_logger:info_report (["Configuring mOSAIC Riak KV component...",
 					{identifier, IdentifierString},
-					{url, erlang:list_to_binary ("http://" ++ StoreHttpSocketIpString ++ ":" ++ erlang:integer_to_list (StoreHttpSocketPort) ++ "/")},
+					{url, erlang:list_to_binary ("http://" ++ StoreHttpSocketFqdnString ++ ":" ++ erlang:integer_to_list (StoreHttpSocketPort) ++ "/")},
 					{store_http_endpoint, StoreHttpSocket}, {store_pb_endpoint, StorePbSocket}, {handoff_endpoint, HandoffSocket}]),
 		ok
 	catch throw : Error = {error, _Reason} -> Error end.
