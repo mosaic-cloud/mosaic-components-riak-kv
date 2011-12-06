@@ -173,9 +173,9 @@ standalone_1 () ->
 		ok = enforce_ok (mosaic_component_callbacks:configure ([{identifier, mosaic_riak_kv}])),
 		Identifier = enforce_ok_1 (mosaic_generic_coders:application_env_get (identifier, mosaic_riak_kv,
 					{decode, fun mosaic_component_coders:decode_component/1}, {error, missing_identifier})),
-		StoreHttpSocket = {<<"127.0.0.1">>, 24637, <<"127.0.0.1">>},
-		StorePbSocket = {<<"127.0.0.1">>, 22652, <<"127.0.0.1">>},
-		HandoffSocket = {<<"127.0.0.1">>, 23283, <<"127.0.0.1">>},
+		StoreHttpSocket = {<<"0.0.0.0">>, 24637, <<"127.0.0.1">>},
+		StorePbSocket = {<<"0.0.0.0">>, 22652, <<"127.0.0.1">>},
+		HandoffSocket = {<<"0.0.0.0">>, 23283, <<"127.0.0.1">>},
 		ok = enforce_ok (setup_applications (Identifier, StoreHttpSocket, StorePbSocket, HandoffSocket)),
 		ok = enforce_ok (start_applications ()),
 		ok
