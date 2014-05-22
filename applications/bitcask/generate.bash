@@ -10,10 +10,10 @@ test -d ./.generated
 
 gcc -shared -o ./.generated/bitcask.so \
 		-I ./repositories/bitcask/c_src \
-		-I "${mosaic_pkg_erlang:-/usr/lib/erlang}/usr/include" \
-		-L "${mosaic_pkg_erlang:-/usr/lib/erlang}/usr/lib" \
-		${mosaic_CFLAGS:-} ${mosaic_LDFLAGS:-} \
+		-I "${pallur_pkg_erlang:-/usr/lib/erlang}/usr/include" \
+		-L "${pallur_pkg_erlang:-/usr/lib/erlang}/usr/lib" \
+		${pallur_CFLAGS:-} ${pallur_LDFLAGS:-} \
 		./repositories/bitcask/c_src/{bitcask_nifs.c,erl_nif_util.c,murmurhash.c} \
-		${mosaic_LIBS:-}
+		${pallur_LIBS:-}
 
 exit 0

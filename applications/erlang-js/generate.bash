@@ -16,12 +16,12 @@ gcc -shared -o ./.generated/erlang_js_drv.so \
 		-I ./repositories/erlang-js/c_src/system/include/js \
 		-I ./repositories/erlang-js/c_src/system/include/nspr \
 		-I ./repositories/erlang-js/c_src \
-		-I "${mosaic_pkg_erlang:-/usr/lib/erlang}/usr/include" \
-		-L "${mosaic_pkg_erlang:-/usr/lib/erlang}/usr/lib" \
-		${mosaic_CFLAGS:-} ${mosaic_LDFLAGS:-} \
+		-I "${pallur_pkg_erlang:-/usr/lib/erlang}/usr/include" \
+		-L "${pallur_pkg_erlang:-/usr/lib/erlang}/usr/lib" \
+		${pallur_CFLAGS:-} ${pallur_LDFLAGS:-} \
 		-DXP_UNIX \
 		./repositories/erlang-js/c_src/{driver_comm.c,spidermonkey.c,spidermonkey_drv.c} \
 		./repositories/erlang-js/c_src/system/lib/{libjs.a,libnspr4.a} \
-		${mosaic_LIBS:-}
+		${pallur_LIBS:-}
 
 exit 0
