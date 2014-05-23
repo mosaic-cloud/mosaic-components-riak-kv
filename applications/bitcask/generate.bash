@@ -12,6 +12,7 @@ gcc -shared -o ./.generated/bitcask.so \
 		-I ./repositories/bitcask/c_src \
 		-I "${pallur_pkg_erlang:-/usr/lib/erlang}/usr/include" \
 		-L "${pallur_pkg_erlang:-/usr/lib/erlang}/usr/lib" \
+		-w \
 		${pallur_CFLAGS:-} ${pallur_LDFLAGS:-} \
 		./repositories/bitcask/c_src/{bitcask_nifs.c,erl_nif_util.c,murmurhash.c} \
 		${pallur_LIBS:-}

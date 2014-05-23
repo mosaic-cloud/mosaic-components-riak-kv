@@ -18,6 +18,7 @@ gcc -shared -o ./.generated/erlang_js_drv.so \
 		-I ./repositories/erlang-js/c_src \
 		-I "${pallur_pkg_erlang:-/usr/lib/erlang}/usr/include" \
 		-L "${pallur_pkg_erlang:-/usr/lib/erlang}/usr/lib" \
+		-w \
 		${pallur_CFLAGS:-} ${pallur_LDFLAGS:-} \
 		-DXP_UNIX \
 		./repositories/erlang-js/c_src/{driver_comm.c,spidermonkey.c,spidermonkey_drv.c} \

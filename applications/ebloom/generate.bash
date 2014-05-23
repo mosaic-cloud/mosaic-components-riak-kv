@@ -12,6 +12,7 @@ gcc -shared -o ./.generated/ebloom_nifs.so \
 		-I ./repositories/ebloom/c_src \
 		-I "${pallur_pkg_erlang:-/usr/lib/erlang}/usr/include" \
 		-L "${pallur_pkg_erlang:-/usr/lib/erlang}/usr/lib" \
+		-w \
 		${pallur_CFLAGS:-} ${pallur_LDFLAGS:-} \
 		./repositories/ebloom/c_src/ebloom_nifs.cpp \
 		-lstdc++ \
