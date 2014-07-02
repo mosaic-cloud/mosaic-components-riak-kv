@@ -6,12 +6,12 @@ trap 'printf "[ee] failed: %s\n" "${BASH_COMMAND}" >&2' ERR || exit 1
 test "${#}" -eq 0
 
 cd -- "$( dirname -- "$( readlink -e -- "${0}" )" )"
-test -d ./.generated
+test -d "${_generate_outputs}"
 
 make -C ./repositories/erlang-js/c_src clean
 make -C ./repositories/erlang-js/c_src js
 
-gcc -shared -o ./.generated/erlang_js_drv.so \
+gcc -shared -o "${_generate_outputs}/erlang_js_drv.so" \
 		-L ./repositories/erlang-js/c_src/system/lib \
 		-I ./repositories/erlang-js/c_src/system/include/js \
 		-I ./repositories/erlang-js/c_src/system/include/nspr \

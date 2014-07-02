@@ -6,8 +6,8 @@ trap 'printf "[ee] failed: %s\n" "${BASH_COMMAND}" >&2' ERR || exit 1
 test "${#}" -eq 0
 
 cd -- "$( dirname -- "$( readlink -e -- "${0}" )" )"
-test -d ./.generated
+test -d "${_generate_outputs}"
 
-cp -T ./repositories/eper/src/eper.app.src ./.generated/eper.app
+cp -T ./repositories/eper/src/eper.app.src "${_generate_outputs}/eper.app"
 
 exit 0

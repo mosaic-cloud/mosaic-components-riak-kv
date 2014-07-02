@@ -1,6 +1,8 @@
 
 (vbs:require-erlang)
 
+(define _generated (vbs:path-join (vbs:resolve-environment-variable "_generated") "cluster-info"))
+
 (vbs:define-erlang-application 'cluster_info
 	erl: "\\./repositories/cluster-info/src/.*\\.erl"
-	additional-ebin: "\\./\\.generated/.*\\.app")
+	additional-ebin: (vbs:path-join _generated "cluster_info.app"))

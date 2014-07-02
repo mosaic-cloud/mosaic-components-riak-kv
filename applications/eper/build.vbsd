@@ -1,7 +1,9 @@
 
 (vbs:require-erlang)
 
+(define _generated (vbs:path-join (vbs:resolve-environment-variable "_generated") "eper"))
+
 (vbs:define-erlang-application 'eper
 	erl: "\\./repositories/eper/src/.*\\.erl"
 	hrl: "\\./repositories/eper/src/.*\\.hrl"
-	additional-ebin: "\\./\\.generated/.*\\.app")
+	additional-ebin: (vbs:path-join _generated "eper.app"))

@@ -1,7 +1,9 @@
 
 (vbs:require-erlang)
 
+(define _generated (vbs:path-join (vbs:resolve-environment-variable "_generated") "ebloom"))
+
 (vbs:define-erlang-application 'ebloom
 	erl: "\\./repositories/ebloom/src/.*\\.erl"
 	additional-ebin: "\\./repositories/ebloom/ebin/.*\\.app"
-	additional-priv: "\\./\\.generated/.*\\.so")
+	additional-priv: (vbs:path-join _generated "ebloom_nifs.so"))

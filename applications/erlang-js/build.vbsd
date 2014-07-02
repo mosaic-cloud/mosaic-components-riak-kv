@@ -1,7 +1,9 @@
 
 (vbs:require-erlang)
 
+(define _generated (vbs:path-join (vbs:resolve-environment-variable "_generated") "erlang-js"))
+
 (vbs:define-erlang-application 'erlang_js
 	erl: "\\./repositories/erlang-js/src/.*\\.erl"
 	additional-ebin: "\\./repositories/erlang-js/ebin/.*\\.app"
-	additional-priv: "\\./repositories/erlang-js/priv/.*\\.js|\\./\\.generated/.*\\.so")
+	additional-priv: (list (vbs:paths-resolve "\\./repositories/erlang-js/priv/.*\\.js") (vbs:path-join _generated "erlang_js_drv.so")))
