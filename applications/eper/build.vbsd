@@ -6,4 +6,5 @@
 (vbs:define-erlang-application 'eper
 	erl: "\\./repositories/eper/src/.*\\.erl"
 	hrl: "\\./repositories/eper/src/.*\\.hrl"
-	additional-ebin: (vbs:path-join _generated "eper.app"))
+	additional-ebin: (vbs:path-join _generated "eper.app")
+	otp-version: 15)

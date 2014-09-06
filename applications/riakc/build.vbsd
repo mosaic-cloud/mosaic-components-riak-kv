@@ -4,4 +4,5 @@
 (vbs:define-erlang-application 'riakc
 	erl: "\\./repositories/riak-erlang-client/src/.*\\.erl"
 	hrl: "(\\./repositories/riak-erlang-client/include|\\./generated)/.*\\.hrl"
-	additional-ebin: "\\./repositories/riak-erlang-client/ebin/.*\\.app|\\./generated/.*\\.beam")
+	additional-ebin: "\\./repositories/riak-erlang-client/ebin/.*\\.app|\\./generated/.*\\.beam"
+	otp-version: 15)

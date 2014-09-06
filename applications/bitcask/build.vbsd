@@ -7,4 +7,5 @@
 	erl: "\\./repositories/bitcask/src/.*\\.erl"
 	hrl: "\\./repositories/bitcask/include/.*\\.hrl"
 	additional-ebin: "\\./repositories/bitcask/ebin/.*\\.app"
-	additional-priv: (vbs:path-join _generated "bitcask.so"))
+	additional-priv: (vbs:path-join _generated "bitcask.so")
+	otp-version: 15)

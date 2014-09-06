@@ -5,4 +5,5 @@
 
 (vbs:define-erlang-application 'cluster_info
 	erl: "\\./repositories/cluster-info/src/.*\\.erl"
-	additional-ebin: (vbs:path-join _generated "cluster_info.app"))
+	additional-ebin: (vbs:path-join _generated "cluster_info.app")
+	otp-version: 15)

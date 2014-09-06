@@ -6,4 +6,5 @@
 (vbs:define-erlang-application 'erlang_js
 	erl: "\\./repositories/erlang-js/src/.*\\.erl"
 	additional-ebin: "\\./repositories/erlang-js/ebin/.*\\.app"
-	additional-priv: (list (vbs:paths-resolve "\\./repositories/erlang-js/priv/.*\\.js") (vbs:path-join _generated "erlang_js_drv.so")))
+	additional-priv: (list (vbs:paths-resolve "\\./repositories/erlang-js/priv/.*\\.js") (vbs:path-join _generated "erlang_js_drv.so"))
+	otp-version: 15)

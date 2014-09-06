@@ -5,4 +5,5 @@
 	dependencies: '(riak_kv webmachine skerl)
 	erl: "\\./repositories/luwak/src/.*\\.erl"
 	hrl: "\\./repositories/luwak/include/.*\\.hrl"
-	additional-ebin: "\\./repositories/luwak/ebin/.*\\.app")
+	additional-ebin: "\\./repositories/luwak/ebin/.*\\.app"
+	otp-version: 15)

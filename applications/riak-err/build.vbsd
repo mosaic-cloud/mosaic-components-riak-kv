@@ -3,4 +3,5 @@
 
 (vbs:define-erlang-application 'riak_err
 	erl: "\\./repositories/riak-err/src/.*\\.erl"
-	additional-ebin: "\\./repositories/riak-err/ebin/.*\\.app")
+	additional-ebin: "\\./repositories/riak-err/ebin/.*\\.app"
+	otp-version: 15)

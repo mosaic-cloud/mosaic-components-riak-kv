@@ -4,4 +4,5 @@
 (vbs:define-erlang-application 'basho_stats
 	erl: "\\./repositories/basho-stats/src/.*\\.erl"
 	hrl: "\\./repositories/basho-stats/include/.*\\.hrl"
-	additional-ebin: "\\./repositories/basho-stats/ebin/.*\\.app")
+	additional-ebin: "\\./repositories/basho-stats/ebin/.*\\.app"
+	otp-version: 15)

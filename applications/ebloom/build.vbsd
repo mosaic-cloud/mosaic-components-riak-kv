@@ -6,4 +6,5 @@
 (vbs:define-erlang-application 'ebloom
 	erl: "\\./repositories/ebloom/src/.*\\.erl"
 	additional-ebin: "\\./repositories/ebloom/ebin/.*\\.app"
-	additional-priv: (vbs:path-join _generated "ebloom_nifs.so"))
+	additional-priv: (vbs:path-join _generated "ebloom_nifs.so")
+	otp-version: 15)

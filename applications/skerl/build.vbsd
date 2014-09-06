@@ -6,4 +6,5 @@
 (vbs:define-erlang-application 'skerl
 	erl: "\\./repositories/skerl/src/.*\\.erl"
 	additional-ebin: "\\./repositories/skerl/ebin/.*\\.app"
-	additional-priv: (vbs:path-join _generated "skerl_nifs.so"))
+	additional-priv: (vbs:path-join _generated "skerl_nifs.so")
+	otp-version: 15)
