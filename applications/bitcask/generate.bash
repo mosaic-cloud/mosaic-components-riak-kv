@@ -15,6 +15,7 @@ gcc -shared -o "${_generate_outputs}/bitcask.so" \
 		-w \
 		${pallur_CFLAGS:-} ${pallur_LDFLAGS:-} \
 		./repositories/bitcask/c_src/{bitcask_nifs.c,erl_nif_util.c,murmurhash.c} \
-		${pallur_LIBS:-}
+		${pallur_LIBS:-} \
+		-static-libgcc
 
 exit 0

@@ -15,7 +15,8 @@ gcc -shared -o "${_generate_outputs}/ebloom_nifs.so" \
 		-w \
 		${pallur_CFLAGS:-} ${pallur_LDFLAGS:-} \
 		./repositories/ebloom/c_src/ebloom_nifs.cpp \
-		-lstdc++ \
-		${pallur_LIBS:-}
+		${pallur_LIBS:-} \
+		-Wl,-Bstatic -lstdc++ -Wl,-Bdynamic \
+		-static-libgcc -static-libstdc++
 
 exit 0

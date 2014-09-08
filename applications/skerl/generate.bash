@@ -15,6 +15,7 @@ gcc -shared -o "${_generate_outputs}/skerl_nifs.so" \
 		-w \
 		${pallur_CFLAGS:-} ${pallur_LDFLAGS:-} \
 		./repositories/skerl/c_src/{skein_api.c,skein_block.c,skein.c,skein_debug.c,skerl_nifs.c} \
-		${pallur_LIBS:-}
+		${pallur_LIBS:-} \
+		-static-libgcc
 
 exit 0
