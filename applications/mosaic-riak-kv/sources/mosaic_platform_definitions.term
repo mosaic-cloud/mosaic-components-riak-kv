@@ -1,0 +1,4 @@
+
+{process_group_alias, 'mosaic-components:riak-kv', <<16#9cdce23e78027ef6a52636da7db820c47e695d11 : 160>>}.
+{process_configurator, 'mosaic-components:riak-kv', term, {mosaic_component_process_configurators, configure_hardcoded, defaults}}.
+{process_configurator, 'mosaic-components:riak-kv', json, {mosaic_component_process_configurators, configure_hardcoded, defaults}}.
