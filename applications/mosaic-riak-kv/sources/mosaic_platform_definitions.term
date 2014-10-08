@@ -1,6 +1,6 @@
 
 {process_group_alias, 'mosaic-components:riak-kv', <<16#9cdce23e78027ef6a52636da7db820c47e695d11 : 160>>}.
 
-{process_configurator, 'mosaic-components:riak-kv', term,
+{process_configurator, 'mosaic-components:riak-kv', [term, json],
 		{mosaic_component_process_configurators, configure_generic,
 				{<<"mosaic-components-riak-kv--run-component">>, defaults}}}.
